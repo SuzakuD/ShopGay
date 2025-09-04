@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Gear Store - Premium Fishing Equipment</title>
+    
+    <!-- Bootstrap 5.3.6 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#" onclick="showHome()">
+                <i class="fas fa-fish me-2"></i>FishingGear Pro
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showHome()">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showCart()">
+                            <i class="fas fa-shopping-cart me-1"></i>Cart 
+                            <span class="badge bg-warning text-dark ms-1" id="cart-count">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showContact()">
+                            <i class="fas fa-envelope me-1"></i>Contact
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item" id="login-nav" style="display: block;">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item" id="register-nav" style="display: block;">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown" id="user-nav" style="display: none;">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i><span id="user-name">User</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="showOrderHistory()">
+                                <i class="fas fa-history me-2"></i>Order History
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showAdminPanel()" id="admin-link" style="display: none;">
+                                <i class="fas fa-cog me-2"></i>Admin Panel
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-5 pt-3">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <div class="col-lg-3 col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-search me-2"></i>Search & Filter</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search Box -->
+                        <div class="mb-3">
+                            <label for="searchInput" class="form-label">Search Products</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search fishing gear...">
+                            <div id="searchSuggestions" class="list-group mt-2" style="display: none;"></div>
+                        </div>
+                        
+                        <!-- Price Filter -->
+                        <div class="mb-3">
+                            <label class="form-label">Price Range</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" class="form-control form-control-sm" id="minPrice" placeholder="Min">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control form-control-sm" id="maxPrice" placeholder="Max">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Category Filter -->
+                        <div class="mb-3">
+                            <label class="form-label">Categories</label>
+                            <div id="categoryList">
+                                <!-- Categories will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Brand Filter -->
+                        <div class="mb-3">
+                            <label class="form-label">Brands</label>
+                            <div id="brandList">
+                                <!-- Brands will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Stock Filter -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="inStockOnly">
+                                <label class="form-check-label" for="inStockOnly">
+                                    In Stock Only
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary w-100" onclick="applyFilters()">
+                            <i class="fas fa-filter me-2"></i>Apply Filters
+                        </button>
+                        <button class="btn btn-outline-secondary w-100 mt-2" onclick="clearFilters()">
+                            <i class="fas fa-times me-2"></i>Clear Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="col-lg-9 col-md-8">
+                <!-- Admin Panel (shown only to admin users) -->
+                <div id="adminPanel" class="card mb-4" style="display: none;">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Admin Panel</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button">
+                                    <i class="fas fa-box me-2"></i>Products
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button">
+                                    <i class="fas fa-tags me-2"></i>Categories
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button">
+                                    <i class="fas fa-shopping-bag me-2"></i>Orders
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">
+                                    <i class="fas fa-users me-2"></i>Users
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="promotions-tab" data-bs-toggle="tab" data-bs-target="#promotions" type="button">
+                                    <i class="fas fa-percentage me-2"></i>Promotions
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button">
+                                    <i class="fas fa-chart-bar me-2"></i>Analytics
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content mt-3" id="adminTabContent">
+                            <!-- Products Management -->
+                            <div class="tab-pane fade show active" id="products" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>Product Management</h6>
+                                    <button class="btn btn-success btn-sm" onclick="showAddProductModal()">
+                                        <i class="fas fa-plus me-2"></i>Add Product
+                                    </button>
+                                </div>
+                                <div id="productsTable">
+                                    <!-- Products table will be loaded here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Categories Management -->
+                            <div class="tab-pane fade" id="categories" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>Category Management</h6>
+                                    <button class="btn btn-success btn-sm" onclick="showAddCategoryModal()">
+                                        <i class="fas fa-plus me-2"></i>Add Category
+                                    </button>
+                                </div>
+                                <div id="categoriesTable">
+                                    <!-- Categories table will be loaded here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Orders Management -->
+                            <div class="tab-pane fade" id="orders" role="tabpanel">
+                                <h6>Order Management</h6>
+                                <div id="ordersTable">
+                                    <!-- Orders table will be loaded here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Users Management -->
+                            <div class="tab-pane fade" id="users" role="tabpanel">
+                                <h6>User Management</h6>
+                                <div id="usersTable">
+                                    <!-- Users table will be loaded here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Promotions Management -->
+                            <div class="tab-pane fade" id="promotions" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>Promotion Management</h6>
+                                    <button class="btn btn-success btn-sm" onclick="showAddPromotionModal()">
+                                        <i class="fas fa-plus me-2"></i>Add Promotion
+                                    </button>
+                                </div>
+                                <div id="promotionsTable">
+                                    <!-- Promotions table will be loaded here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Analytics Dashboard -->
+                            <div class="tab-pane fade" id="analytics" role="tabpanel">
+                                <h6>Analytics Dashboard</h6>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-primary" id="totalSales">$0</h5>
+                                                <p class="card-text">Total Sales</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-success" id="totalOrders">0</h5>
+                                                <p class="card-text">Total Orders</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-info" id="totalProducts">0</h5>
+                                                <p class="card-text">Total Products</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-warning" id="totalCustomers">0</h5>
+                                                <p class="card-text">Total Customers</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <canvas id="salesChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Products Display -->
+                <div id="mainContent">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 id="pageTitle">Fishing Equipment</h4>
+                        <div class="d-flex align-items-center">
+                            <span class="me-3">Sort by:</span>
+                            <select class="form-select form-select-sm" id="sortSelect" onchange="sortProducts()">
+                                <option value="name">Name</option>
+                                <option value="price_low">Price: Low to High</option>
+                                <option value="price_high">Price: High to Low</option>
+                                <option value="newest">Newest</option>
+                                <option value="rating">Rating</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="productsGrid" class="row">
+                        <!-- Products will be loaded here -->
+                    </div>
+                    
+                    <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <div id="noProductsMessage" class="text-center py-5" style="display: none;">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No products found</h5>
+                        <p class="text-muted">Try adjusting your search criteria</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-sign-in-alt me-2"></i>Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Register</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label for="registerName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="registerName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="registerEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="registerPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="registerConfirmPassword" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-shopping-cart me-2"></i>Shopping Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartItems">
+                        <!-- Cart items will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between w-100">
+                        <button type="button" class="btn btn-outline-danger" onclick="clearCart()">
+                            <i class="fas fa-trash me-2"></i>Clear Cart
+                        </button>
+                        <div class="text-end">
+                            <h5>Total: $<span id="cartTotal">0.00</span></h5>
+                            <button type="button" class="btn btn-primary" onclick="showCheckout()">
+                                <i class="fas fa-credit-card me-2"></i>Checkout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-credit-card me-2"></i>Checkout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="checkoutForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Shipping Information</h6>
+                                <div class="mb-3">
+                                    <label for="shippingName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="shippingName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="shippingAddress" class="form-label">Address</label>
+                                    <textarea class="form-control" id="shippingAddress" rows="3" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="shippingCity" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="shippingCity" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="shippingState" class="form-label">State</label>
+                                            <input type="text" class="form-control" id="shippingState" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="shippingZip" class="form-label">ZIP Code</label>
+                                            <input type="text" class="form-control" id="shippingZip" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Payment Information</h6>
+                                <div class="mb-3">
+                                    <label for="cardNumber" class="form-label">Card Number</label>
+                                    <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="expiryDate" class="form-label">Expiry Date</label>
+                                            <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="cvv" class="form-label">CVV</label>
+                                            <input type="text" class="form-control" id="cvv" placeholder="123" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="couponCode" class="form-label">Coupon Code (Optional)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="couponCode">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="applyCoupon()">Apply</button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <h6>Order Summary</h6>
+                                    <div id="checkoutSummary">
+                                        <!-- Order summary will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="processPayment()">
+                        <i class="fas fa-credit-card me-2"></i>Complete Purchase
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Confirmation Modal -->
+    <div class="modal fade" id="orderConfirmationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Order Confirmed!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                    <h5>Thank you for your purchase!</h5>
+                    <p>Your order has been successfully placed.</p>
+                    <div class="alert alert-info">
+                        <strong>Order ID:</strong> <span id="orderId"></span><br>
+                        <strong>Total:</strong> $<span id="orderTotal"></span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-primary" onclick="printReceipt()">
+                            <i class="fas fa-print me-2"></i>Print Receipt
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="showOrderHistory()">
+                            <i class="fas fa-history me-2"></i>View Order History
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-envelope me-2"></i>Contact Us</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contactForm">
+                        <div class="mb-3">
+                            <label for="contactName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="contactName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="contactEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactSubject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="contactSubject" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactMessage" class="form-label">Message</label>
+                            <textarea class="form-control" id="contactMessage" rows="5" required></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal fade" id="productDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productDetailTitle">Product Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner" id="productImages">
+                                    <!-- Product images will be loaded here -->
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4 id="productDetailName"></h4>
+                            <div class="mb-3">
+                                <span class="h5 text-primary" id="productDetailPrice"></span>
+                                <span class="text-muted ms-2" id="productDetailStock"></span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="rating" id="productDetailRating">
+                                    <!-- Rating stars will be loaded here -->
+                                </div>
+                                <small class="text-muted" id="productDetailReviewCount"></small>
+                            </div>
+                            <p id="productDetailDescription"></p>
+                            <div class="mb-3">
+                                <label for="productQuantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="productQuantity" value="1" min="1">
+                            </div>
+                            <button class="btn btn-primary btn-lg" onclick="addToCartFromDetail()">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Reviews Section -->
+                    <div class="mt-4">
+                        <h6>Customer Reviews</h6>
+                        <div id="productReviews">
+                            <!-- Reviews will be loaded here -->
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-outline-primary" onclick="showAddReviewModal()">
+                                <i class="fas fa-star me-2"></i>Write a Review
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Review Modal -->
+    <div class="modal fade" id="addReviewModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-star me-2"></i>Write a Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addReviewForm">
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <div class="rating-input">
+                                <i class="fas fa-star" data-rating="1"></i>
+                                <i class="fas fa-star" data-rating="2"></i>
+                                <i class="fas fa-star" data-rating="3"></i>
+                                <i class="fas fa-star" data-rating="4"></i>
+                                <i class="fas fa-star" data-rating="5"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reviewTitle" class="form-label">Review Title</label>
+                            <input type="text" class="form-control" id="reviewTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reviewText" class="form-label">Review</label>
+                            <textarea class="form-control" id="reviewText" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reviewImages" class="form-label">Upload Images (Optional)</label>
+                            <input type="file" class="form-control" id="reviewImages" multiple accept="image/*">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Review
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.3.6 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
