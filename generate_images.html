@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Placeholder Images</title>
+</head>
+<body>
+    <h1>Generating Placeholder Images...</h1>
+    <div id="status"></div>
+    
+    <script>
+        function createPlaceholderImage(width, height, text, filename) {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Border
+            ctx.strokeStyle = '#dee2e6';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(1, 1, width - 2, height - 2);
+            
+            // Text
+            ctx.fillStyle = '#6c757d';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, width / 2, height / 2);
+            
+            // Convert to blob and download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }, 'image/jpeg', 0.9);
+        }
+        
+        // Product images
+        const products = [
+            'shimano-stradic-fl.jpg', 'shimano-stradic-fl-2.jpg', 'daiwa-bg.jpg', 'daiwa-bg-2.jpg',
+            'abu-garcia-revo-sx.jpg', 'penn-battalion-ii.jpg', 'okuma-ceymar-c30.jpg', 'shimano-teramar.jpg',
+            'daiwa-procyon.jpg', 'abu-garcia-vendetta.jpg', 'okuma-tundra.jpg', 'shimano-curado-k.jpg',
+            'daiwa-tatula-sv.jpg', 'abu-garcia-revo-sx-bc.jpg', 'penn-fathom-ii.jpg', 'okuma-komodo-ss.jpg',
+            'shimano-stella-sw.jpg', 'daiwa-saltist-mq.jpg', 'abu-garcia-ambassadeur-c3.jpg', 'penn-slammer-iv.jpg',
+            'okuma-helios-sx.jpg', 'rapala-original.jpg', 'berkley-powerbait-worm.jpg', 'rapala-shad-rap.jpg',
+            'berkley-gulp-minnow.jpg', 'rapala-x-rap.jpg', 'berkley-power-eggs.jpg', 'rapala-countdown.jpg',
+            'berkley-gulp-shrimp.jpg', 'rapala-husky-jerk.jpg', 'berkley-power-worms.jpg', 'shimano-tackle-box.jpg',
+            'berkley-trilene-xl.jpg', 'mustad-ultrapoint-hooks.jpg', 'rapala-digital-scale.jpg', 'berkley-attractant.jpg',
+            'shimano-pliers.jpg', 'berkley-trilene-braid.jpg', 'rapala-fish-gripper.jpg', 'shimano-fishing-net.jpg',
+            'berkley-fishing-gloves.jpg'
+        ];
+        
+        // Category images
+        const categories = ['rods.jpg', 'reels.jpg', 'baits.jpg', 'accessories.jpg'];
+        
+        // Brand logos
+        const brands = ['shimano.png', 'daiwa.png', 'abu-garcia.png', 'penn.png', 'okuma.png', 'rapala.png', 'berkley.png', 'st-croix.png'];
+        
+        let index = 0;
+        const allImages = [
+            ...products.map(f => ({file: f, type: 'product', text: f.replace('.jpg', '').replace('-', ' ').toUpperCase()})),
+            ...categories.map(f => ({file: f, type: 'category', text: f.replace('.jpg', '').toUpperCase()})),
+            ...brands.map(f => ({file: f, type: 'brand', text: f.replace('.png', '').replace('-', ' ').toUpperCase()}))
+        ];
+        
+        function generateNext() {
+            if (index >= allImages.length) {
+                document.getElementById('status').innerHTML = '<h2>All images generated! Please save them to the appropriate directories.</h2>';
+                return;
+            }
+            
+            const item = allImages[index];
+            const text = item.text;
+            const filename = item.file;
+            
+            document.getElementById('status').innerHTML = `Generating ${index + 1}/${allImages.length}: ${filename}`;
+            
+            createPlaceholderImage(400, 300, text, filename);
+            
+            index++;
+            setTimeout(generateNext, 100);
+        }
+        
+        // Start generation
+        generateNext();
+    </script>
+</body>
+</html>

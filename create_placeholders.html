@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Placeholder Images</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .image-preview { display: inline-block; margin: 10px; border: 1px solid #ccc; }
+        .download-btn { display: block; margin: 10px 0; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .download-btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fishing Gear Store - Placeholder Image Generator</h1>
+        <p>This page will generate placeholder images for the fishing gear store. Click the buttons below to download the images, then save them to the appropriate directories.</p>
+        
+        <h2>Product Images</h2>
+        <div id="product-images"></div>
+        
+        <h2>Category Images</h2>
+        <div id="category-images"></div>
+        
+        <h2>Brand Logos</h2>
+        <div id="brand-images"></div>
+        
+        <h2>Instructions</h2>
+        <ol>
+            <li>Click each download button to save the image</li>
+            <li>Save product images to: <code>assets/images/products/</code></li>
+            <li>Save category images to: <code>assets/images/categories/</code></li>
+            <li>Save brand logos to: <code>assets/images/brands/</code></li>
+        </ol>
+    </div>
+
+    <script>
+        function createImage(width, height, text, filename) {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Border
+            ctx.strokeStyle = '#dee2e6';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(1, 1, width - 2, height - 2);
+            
+            // Text
+            ctx.fillStyle = '#6c757d';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Split text into lines if too long
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+            
+            for (let i = 1; i < words.length; i++) {
+                const testLine = currentLine + ' ' + words[i];
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > width - 40) {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            lines.push(currentLine);
+            
+            // Draw lines
+            const lineHeight = 25;
+            const startY = (height - (lines.length - 1) * lineHeight) / 2;
+            
+            lines.forEach((line, index) => {
+                ctx.fillText(line, width / 2, startY + index * lineHeight);
+            });
+            
+            return canvas;
+        }
+        
+        function createDownloadButton(canvas, filename, container) {
+            const div = document.createElement('div');
+            div.className = 'image-preview';
+            
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL('image/jpeg', 0.9);
+            img.style.width = '200px';
+            img.style.height = '150px';
+            img.style.objectFit = 'cover';
+            
+            const link = document.createElement('a');
+            link.className = 'download-btn';
+            link.textContent = `Download ${filename}`;
+            link.download = filename;
+            
+            canvas.toBlob(function(blob) {
+                link.href = URL.createObjectURL(blob);
+            }, 'image/jpeg', 0.9);
+            
+            div.appendChild(img);
+            div.appendChild(link);
+            container.appendChild(div);
+        }
+        
+        // Product images
+        const products = [
+            'shimano-stradic-fl.jpg', 'shimano-stradic-fl-2.jpg', 'daiwa-bg.jpg', 'daiwa-bg-2.jpg',
+            'abu-garcia-revo-sx.jpg', 'penn-battalion-ii.jpg', 'okuma-ceymar-c30.jpg', 'shimano-teramar.jpg',
+            'daiwa-procyon.jpg', 'abu-garcia-vendetta.jpg', 'okuma-tundra.jpg', 'shimano-curado-k.jpg',
+            'daiwa-tatula-sv.jpg', 'abu-garcia-revo-sx-bc.jpg', 'penn-fathom-ii.jpg', 'okuma-komodo-ss.jpg',
+            'shimano-stella-sw.jpg', 'daiwa-saltist-mq.jpg', 'abu-garcia-ambassadeur-c3.jpg', 'penn-slammer-iv.jpg',
+            'okuma-helios-sx.jpg', 'rapala-original.jpg', 'berkley-powerbait-worm.jpg', 'rapala-shad-rap.jpg',
+            'berkley-gulp-minnow.jpg', 'rapala-x-rap.jpg', 'berkley-power-eggs.jpg', 'rapala-countdown.jpg',
+            'berkley-gulp-shrimp.jpg', 'rapala-husky-jerk.jpg', 'berkley-power-worms.jpg', 'shimano-tackle-box.jpg',
+            'berkley-trilene-xl.jpg', 'mustad-ultrapoint-hooks.jpg', 'rapala-digital-scale.jpg', 'berkley-attractant.jpg',
+            'shimano-pliers.jpg', 'berkley-trilene-braid.jpg', 'rapala-fish-gripper.jpg', 'shimano-fishing-net.jpg',
+            'berkley-fishing-gloves.jpg'
+        ];
+        
+        // Category images
+        const categories = [
+            {file: 'rods.jpg', text: 'Fishing Rods'},
+            {file: 'reels.jpg', text: 'Fishing Reels'},
+            {file: 'baits.jpg', text: 'Baits & Lures'},
+            {file: 'accessories.jpg', text: 'Accessories'}
+        ];
+        
+        // Brand logos
+        const brands = [
+            {file: 'shimano.png', text: 'Shimano'},
+            {file: 'daiwa.png', text: 'Daiwa'},
+            {file: 'abu-garcia.png', text: 'Abu Garcia'},
+            {file: 'penn.png', text: 'Penn'},
+            {file: 'okuma.png', text: 'Okuma'},
+            {file: 'rapala.png', text: 'Rapala'},
+            {file: 'berkley.png', text: 'Berkley'},
+            {file: 'st-croix.png', text: 'St. Croix'}
+        ];
+        
+        // Generate product images
+        const productContainer = document.getElementById('product-images');
+        products.forEach(filename => {
+            const text = filename.replace('.jpg', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const canvas = createImage(400, 300, text, filename);
+            createDownloadButton(canvas, filename, productContainer);
+        });
+        
+        // Generate category images
+        const categoryContainer = document.getElementById('category-images');
+        categories.forEach(item => {
+            const canvas = createImage(400, 300, item.text, item.file);
+            createDownloadButton(canvas, item.file, categoryContainer);
+        });
+        
+        // Generate brand logos
+        const brandContainer = document.getElementById('brand-images');
+        brands.forEach(item => {
+            const canvas = createImage(200, 100, item.text, item.file);
+            createDownloadButton(canvas, item.file, brandContainer);
+        });
+    </script>
+</body>
+</html>
